@@ -2,17 +2,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using MLAPI;
-
+using MLAPI.SceneManagement;
 public class NetworkManagerHandler : MonoBehaviour
 {
     [SerializeField]
     bool IsDedicatedServer = false;
     void Start()
     {
+
         if (IsDedicatedServer)
         {
             print("Starting Server");
-            NetworkManager.Singleton.StartServer();
+            NetworkManager.Singleton.StartServer();   
+            NetworkSceneManager.SwitchScene("LobbyMenu");
         }
     }
 
@@ -34,6 +36,6 @@ public class NetworkManagerHandler : MonoBehaviour
 
     public void ServerStarted()
     {
-        print("The Server Has Started :D");
+        print("Server Started");
     }    
 }

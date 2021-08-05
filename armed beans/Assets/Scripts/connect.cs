@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using MLAPI;
+using MLAPI.SceneManagement;
 public class connect : NetworkBehaviour
 {
     [SerializeField] 
@@ -9,6 +11,7 @@ public class connect : NetworkBehaviour
     public void Host()
     {
         NetworkManager.Singleton.StartHost();
+        NetworkSceneManager.SwitchScene("LobbyMenu");
         gameObject.SetActive(false);
         uiCam.SetActive(false);
     }
@@ -21,6 +24,7 @@ public class connect : NetworkBehaviour
     public void Server()
     {
         NetworkManager.Singleton.StartServer();   
+        NetworkSceneManager.SwitchScene("LobbyMenu");
         gameObject.SetActive(false);
         uiCam.SetActive(false);
     }

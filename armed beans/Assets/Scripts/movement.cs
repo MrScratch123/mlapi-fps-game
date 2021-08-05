@@ -31,25 +31,26 @@ public class movement : NetworkBehaviour
     float JumpHeight = 10f;
     
     [SerializeField]
-    GameObject cameraChild;
+    Camera cameraChild;
 
     void Start()
     {
-        if (IsLocalPlayer)
+        if (IsOwner)
         {
             characterController = GetComponent<CharacterController>();
             Cursor.lockState = CursorLockMode.Locked;
         }
         else
         {
-            cameraChild.SetActive(false);
+            cameraChild.enabled  = false;
+
         }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (IsLocalPlayer) 
+        if (IsOwner) 
         {
             MovePlayerAndCamera();
         }
