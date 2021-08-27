@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using MLAPI;
 using MLAPI.Messaging;
+using MLAPI.NetworkVariable;
 public class FFA_Gamemode : GamemodeBase
-{
+{    
     [SerializeField]
     GameObject PlayerPrefab;
 
@@ -12,9 +14,12 @@ public class FFA_Gamemode : GamemodeBase
     GameObject[] SpawnPoints;
 
 
-    void Awake()
+
+    void Start()
     {
         GamemodeBase.CurrentGameMode = this;
+        NetworkManager.Singleton.OnClientConnectedCallback += UpdateKillList;
+        NetworkManager.Singleton.OnClientDisconnectCallback += UpdateKillList;
     }
     public override void RequestDamage(int DamagedPlayerID, int InstigatorID, float Damage)
     {
@@ -26,8 +31,8 @@ public class FFA_Gamemode : GamemodeBase
     {
 
         NetworkPlayerManager DamagedPlayer = GetPlayerFromID(DamagedPlayerID);
-        NetworkPlayerManager Instigator = GetPlayerFromID(DamagedPlayerID);
-        if (DamagedPlayer && Instigator)
+        NetworkPlayerManager Instigator = GetPlayerFromID(InstigatorID);
+        if (DamagedPlayer && Instigator && Instigator.CurrentPlayer.Value)
         {
             DamagedPlayer.CurrentPlayer.Value.GetComponent<Player>().Health.Value -= Damage;
             DamagedPlayer.CurrentPlayer.Value.GetComponent<Player>().LastPlayerWhoDamaged = Instigator;
@@ -68,16 +73,33 @@ public class FFA_Gamemode : GamemodeBase
 
         if (DeadPlayer && Instigator)
         {
-            DeadPlayer.Deaths.Value += 1;
-            Instigator.Kills.Value += 1;
+            DeadPlayer.Deaths.Value = DeadPlayer.Deaths.Value + 1;
+            Instigator.Kills.Value = Instigator.Kills.Value + 1;
             Destroy(DeadPlayer.CurrentPlayer.Value);
             DeadPlayer.CurrentPlayer.Value.GetComponent<NetworkObject>().Despawn();
             print("someone died :skull:");
             DeadPlayer.SpawnDeadPlayerCameraClientRPC();
+            UpdateKillsList();
         }
 
     }
 
+    void UpdateKillList(ulong ULONG)
+    {
+        UpdateKillsList();
+    }
+
+    void UpdateKillsList()
+    {
+        // if (!IsServer) {return;}
+        // var playerManagers = FindObjectsOfType<NetworkPlayerManager>();
+        // KillList.Value.RemoveRange(0, KillList.Value.Count);
+        // var sortedPlayerManagers = playerManagers.OrderBy(playerManagers => playerManagers.Kills).ToArray<NetworkPlayerManager>();
+        // foreach(NetworkPlayerManager playerManager in sortedPlayerManagers)
+        // {
+        //     KillList.Value.Add(playerManager.gameObject);
+        // }
+    }
 }
 
 

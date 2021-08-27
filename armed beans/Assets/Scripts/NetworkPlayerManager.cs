@@ -13,6 +13,8 @@ public class NetworkPlayerManager : NetworkBehaviour
     [HideInInspector]
     public NetworkVariable<string> PlayerName = new NetworkVariable<string>();
 
+    
+
     [HideInInspector]
     public NetworkVariable<int> PlayerID = new NetworkVariable<int>(new NetworkVariableSettings {WritePermission = NetworkVariablePermission.ServerOnly});
     
@@ -67,6 +69,11 @@ public class NetworkPlayerManager : NetworkBehaviour
         {
             myCam.enabled = false;
         }
+        if (IsServer)
+        {
+            Kills.Value = 0;
+            Deaths.Value = 0;
+        }
     }
 
    void SceneSwitched()
@@ -87,11 +94,10 @@ public class NetworkPlayerManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     public void SpawnPlayerServerRPC(PlayerType playerType)
     {
-        if (!IsServer) { return; }
         CurrentPlayer.Value = GamemodeBase.CurrentGameMode.SpawnPlayer(PlayerID.Value, playerType);
         ulong ClientID = GetComponent<NetworkObject>().OwnerClientId;
         CurrentPlayer.Value.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId);
-        CurrentPlayer.Value.GetComponent<Player>().MyPlayerManager.Value = gameObject;
+        CurrentPlayer.Value.GetComponent<Player>().MyPlayerManager.Value = this.gameObject;
     }
     
 

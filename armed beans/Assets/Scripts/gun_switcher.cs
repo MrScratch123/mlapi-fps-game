@@ -12,6 +12,7 @@ public class gun_switcher : NetworkBehaviour
 
     void Start()
     {
+        CurrentGunIndex.Value = 1;
         CurrentGunIndex.Value = 0;
     }
 
